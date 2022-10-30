@@ -71,7 +71,7 @@ mpg %>%
             displ,
             .groups = "drop") %>% 
   ggplot() +
-  geom_point(aes(x = displ, y = cty, color = class)) +
+  geom_point(aes(x = displ, y = cty, color = class), size = 1) +
   scale_color_brewer(palette = "Dark2") +
   labs(x = "Engine displacement (litter)", y = "City miles per gallon", color = "Class")
   
@@ -84,7 +84,7 @@ mpg %>%
             displ,
             .groups = "drop") %>% 
   ggplot() +
-  geom_point(aes(x = displ, y = cty, color = class), color = "black") +
+  geom_point(aes(x = displ, y = cty, color = class), color = "black",size = 0.5) +
   labs(x = "Engine displacement (litter)", y = "City miles per gallon") +
   facet_wrap(~ class, ncol = 3)
 ```
@@ -100,17 +100,6 @@ glimpse(economics)
 ```
 
 まず、折れ線グラフを先につくり、キャンバスの大きさはpresidentalに合わせる
-
-
-
-```{r}
-fig1 <- economics %>% 
-  ggplot() +
-  geom_line(aes(x = date, y = unemploy)) +
-  scale_x_date(breaks = seq(as.Date("1953-01-20"), as.Date("2020-01-20"), by = "20 year"),
-               labels = date_format("%Y"))
-fig1
-```
 
 gglotを重ねられるのか？
 
@@ -168,58 +157,20 @@ for (i in 1:length(df1$date)) {
 }
 ```
 
-
 ```{r}
-fig2 <- ggplot(df1, aes(x = date, y = unemploy))
-fig2
-```
-
-```{r}
-ggplot(df1, aes(x = date, y = unemploy)) +
-  geom_area(aes(fill = party)) +
-  geom_line()
-```
-
-```{r}
-fig1 + geom_rect(xmin = 1980, xmax = 2000, ymin = 0, ymax = 12000,
-                alpha = .1, fill = "red")
+ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_rect(data = presidential, aes(NULL, NULL, xmin = start, xmax = end, 
+                                     fill = party),
+            ymin = 0, ymax = 16000, alpha = 0.4, alpha = 0.1,colour = "gray") +
+  geom_line(size = 0.5) +
+  scale_fill_manual(values = c("Democratic" = "blue", 
+                               "Republican" = "tomato")) +
+  geom_text(data=presidential,aes(x=start+500, y=3000,label=name), size=2) +
+  labs(title = "Unemployment in the US", x = "Date", y = "Unemployment",
+       fill = "Government")
 ```
 
 
-```{r}
-fig <- ggplot(data = economics, aes(x = date, y = unemploy)) +
-  geom_rect(data = df1, aes(NULL, NULL, xmin = "1953-01-20", xmax = "1961-01-20", fill = party),
-            ymin = 0, ymax = 1600, alpha = 0.4)
-fig + geom_line()
-```
-
-空白期間が問題だな。。。
-
-```{r}
-
-library(plotly)
-
-df <- data.frame(name = c("Nixon", "Ford", "Carter", "Reagan", "Bush", "Clinton", "Bush", "Obama"),
-                   start = as.Date(c("1969-01-20", "1974-08-09", "1977-01-20", "1981-01-20",
-                             "1989-01-20", "1993-01-20", "2001-01-20", "2009-01-20")),
-                   end = as.Date(c("1974-08-09", "1977-01-20", "1981-01-20", "1989-01-20", 
-                           "1993-01-20", "2001-01-20", "2009-01-20", "2017-01-20")),
-                   party = c("R", "R", "D", "R", "R", "D", "R", "D"),
-                   stringsAsFactors = FALSE) %>%
-  mutate(median_x = start + floor((end-start)/2))
-
-p <- ggplot(economics, aes(x=date,y=unemploy)) +
-  geom_rect(data=df, aes(NULL,NULL,xmin=start,xmax=end,fill=party),
-            ymin=0,ymax=16000, colour="white", size=0.5, alpha=0.2) +
-  scale_fill_manual(values=c("R" = "red", "D" = "blue")) +
-  geom_line() +
-  geom_text(data=df,aes(x=median_x,y=3000,label=name), size=3) +
-  labs(title = "Unemmployment numbers since 1967",
-       y = "No. unemployed (x 1000)")
-fig <- ggplotly(p)
-
-fig
-```
             
 
 
