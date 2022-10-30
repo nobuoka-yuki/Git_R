@@ -173,10 +173,23 @@ t_jitter <- ggplot(hflights, aes(x = ArrTime, y = ArrDelay)) + geom_jitter(alpha
 t_jitter + xlab("Arrival Time") + ylab("Arrival Delay")
 ```
 
+```{r}
+t <- ggplot(data = hflights, aes(x = ArrTime, y = ArrDelay))
+t + geom_point() + geom_smooth(method = "lm")
+```
 
+```{r}
+set.seed(111)
+fsample <- hflights[sample(nrow(hflights), 1000),]
 
+t_jitter_sample <- ggplot(fsample, aes(x = ArrTime, y = ArrDelay)) + geom_jitter()
+t_jitter_sample + xlab("Arrival Time") + ylab("Arrival Delay") + ggtitle("Random Sample")
+```
 
-
+```{r}
+t_sample <- ggplot(fsample, aes(x = ArrTime, y = ArrDelay))
+t_sample + geom_point() + geom_smooth(method = "lm")
+```
 
 
 
