@@ -1,6 +1,6 @@
 ---
 title: "テンプレート"
-subtitle: "サブタイトル"
+subtitle: "サブタイトルを書く"
 author: "Nobuoka Yuki (1240492)"
 date: "`r Sys.Date()`"
 output:
