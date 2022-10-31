@@ -1,0 +1,8 @@
+"0","set.seed(111)"
+"0","fsample <- hflights[sample(nrow(hflights), 1000),]"
+"0",""
+"0","t_jitter_sample <- ggplot(fsample, aes(x = ArrTime, y = ArrDelay)) + geom_jitter()"
+"0","t_jitter_sample + xlab(""Arrival Time"") + ylab(""Arrival Delay"") + ggtitle(""Random Sample"")"
+"2","Warning:"
+"2"," Removed 12 rows containing missing values (geom_point).
+"

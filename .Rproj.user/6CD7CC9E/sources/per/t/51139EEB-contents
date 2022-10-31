@@ -1,0 +1,176 @@
+---
+title: "Informattion Science3"
+subtitle: "Assignment3"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: TRUE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+
+
+# 1
+
+```{r}
+glimpse(mpg)
+```
+
+横軸はエンジン排気量(displ)、縦軸は、(cyl)
+
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(cty,
+            displ,
+            .groups = "drop") %>% 
+  ggplot() +
+  geom_point(aes(x = displ, y = cty, color = class), size = 1) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(x = "Engine displacement (litter)", y = "City miles per gallon", color = "Class")
+  
+```
+
+```{r}
+mpg %>% 
+  group_by(class) %>% 
+  summarise(cty,
+            displ,
+            .groups = "drop") %>% 
+  ggplot() +
+  geom_point(aes(x = displ, y = cty, color = class), color = "black",size = 0.5) +
+  labs(x = "Engine displacement (litter)", y = "City miles per gallon") +
+  facet_wrap(~ class, ncol = 3)
+```
+
+# 2
+
+```{r}
+glimpse(presidential)
+```
+
+```{r}
+glimpse(economics)
+```
+
+まず、折れ線グラフを先につくり、キャンバスの大きさはpresidentalに合わせる
+
+gglotを重ねられるのか？
+
+Date型を数値に直す
+
+```{r}
+daydata_1 <- seq(as.Date("1953-01-20"), as.Date("1967-07-01")-1, by = "1 day")
+daydata_2 <- seq(as.Date("2015-04-02"), as.Date("2017-01-20"), by = "1 day")
+```
+
+
+まずは、ecininucsのデータの長さをpresidentにそろえる必要あり。キャンバスが一致しない
+
+```{r}
+df1 <- economics[, c("date", "unemploy")]
+
+df2 <- tibble(date = daydata_1,
+              unemploy = rep(NA, length(daydata_1)))
+
+df3 <- tibble(date = daydata_2,
+              unemploy = rep(NA, length(daydata_2)))
+
+df1 <- bind_rows(df2, df1, df3)
+```
+
+```{r}
+fig1 <- df1 %>% 
+  ggplot() +
+  geom_line(aes(x = date, y = unemploy))
+fig1
+```
+
+```{r}
+df1 <- df1 %>% 
+  mutate(party = rep(0, length(df1$date)))
+```
+
+```{r}
+for (i in 1:length(df1$date)) {
+  day <- df1$date[i]
+  
+  if (day <= "1961-01-20") {
+    df1$party[i] <- "Republican"
+  } else if ((day >= "1969-01-20") & (day <= "1974-08-09")) {
+    df1$party[i] <- "Republican"
+  } else if ((day >= "1969-01-20") & (day <= "1977-01-20")) {
+    df1$party[i] <- "Republican"
+  } else if ((day >= "1981-01-20") & (day <= "1993-01-20")) {
+    df1$party[i] <- "Republican"
+  } else if ((day >= "2001-01-20") & (day <= "2009-01-20")) {
+    df1$party[i] <- "Republican"
+  } else {
+    df1$party[i] <- "Democratic"
+  }
+}
+```
+
+```{r}
+ggplot(economics, aes(x = date, y = unemploy)) +
+  geom_rect(data = presidential, aes(NULL, NULL, xmin = start, xmax = end, 
+                                     fill = party),
+            ymin = 0, ymax = 16000, alpha = 0.4, alpha = 0.1,colour = "gray") +
+  geom_line(size = 0.5) +
+  scale_fill_manual(values = c("Democratic" = "blue", 
+                               "Republican" = "tomato")) +
+  geom_text(data=presidential,aes(x=start+500, y=3000,label=name), size=2) +
+  labs(title = "Unemployment in the US", x = "Date", y = "Unemployment",
+       fill = "Government")
+```
+
+
+            
+
+

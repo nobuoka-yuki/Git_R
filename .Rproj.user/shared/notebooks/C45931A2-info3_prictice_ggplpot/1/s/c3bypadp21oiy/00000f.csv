@@ -1,0 +1,5 @@
+"0","cpc_carat_den <- ggplot(data = diamonds, aes(x = carat))"
+"0","cpc_carat_den + geom_density(aes(color = color)) + scale_x_continuous(limits = c(0,3))"
+"2","Warning:"
+"2"," Removed 32 rows containing non-finite values (stat_density).
+"

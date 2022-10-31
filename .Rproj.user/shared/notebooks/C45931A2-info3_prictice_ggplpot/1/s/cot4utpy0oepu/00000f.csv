@@ -1,0 +1,2 @@
+"0","set.seed(123)"
+"0","dsample <- diamonds[sample(nrow(diamonds), 100),]"

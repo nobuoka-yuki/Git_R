@@ -1,0 +1,56 @@
+---
+title: "テンプレート"
+subtitle: "サブタイトルを書く"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: TRUE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+

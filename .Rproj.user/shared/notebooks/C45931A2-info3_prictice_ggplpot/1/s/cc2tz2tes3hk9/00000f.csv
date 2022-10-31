@@ -1,0 +1,2 @@
+"0","cpc_carat <- ggplot(data = diamonds, aes(x = color, y = carat))"
+"0","cpc_carat + geom_jitter(alpha = 0.1)"

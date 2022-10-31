@@ -1,0 +1,5 @@
+"0","d_box <- ggplot(hflights, aes(x = factor(DayOfWeek), y = ArrDelay)) + geom_boxplot()"
+"0","d_box + xlab(""Day of Week"") + ylab(""Arrival Delay"")"
+"2","Warning:"
+"2"," Removed 3622 rows containing non-finite values (stat_boxplot).
+"

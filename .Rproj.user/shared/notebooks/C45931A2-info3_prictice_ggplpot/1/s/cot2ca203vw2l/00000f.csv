@@ -1,0 +1,5 @@
+"0","d <- ggplot(hflights, aes(x = factor(DayOfWeek), y = ArrDelay)) + geom_point()"
+"0","d + xlab(""Day of Week"") + ylab(""Arrival Delay"")"
+"2","Warning:"
+"2"," Removed 3622 rows containing missing values (geom_point).
+"

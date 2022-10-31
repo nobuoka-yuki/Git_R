@@ -1,0 +1,5 @@
+"0","cpc_price_den <- ggplot(diamonds, aes(x = price))"
+"0","cpc_price_den + geom_density(aes(color = color)) + scale_x_continuous(limits = c(0, 17000))"
+"2","Warning:"
+"2"," Removed 717 rows containing non-finite values (stat_density).
+"

@@ -1,0 +1,82 @@
+"1","
+"
+"2","trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/cli_3.2.0.zip'
+"
+"2","Content type 'application/zip'"
+"2"," length 1255499 bytes (1.2 MB)
+"
+"2","downloaded 1.2 MB
+
+"
+"2","trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/rlang_1.0.2.zip'
+"
+"2","Content type 'application/zip'"
+"2"," length 1718546 bytes (1.6 MB)
+"
+"2","downloaded 1.6 MB
+
+"
+"2","trying URL 'https://cran.rstudio.com/bin/windows/contrib/4.0/vctrs_0.4.1.zip'
+"
+"2","Content type 'application/zip'"
+"2"," length 1569486 bytes (1.5 MB)
+"
+"2","downloaded 1.5 MB
+
+"
+"1","package ‘cli’ successfully unpacked and MD5 sums checked
+"
+"1","package ‘rlang’ successfully unpacked and MD5 sums checked
+"
+"1","package ‘vctrs’ successfully unpacked and MD5 sums checked
+"
+"1","
+"
+"1",""
+"1","The downloaded binary packages are in
+	C:\Users\NobuokaYuki\AppData\Local\Temp\RtmpUXxOKU\downloaded_packages"
+"1",""
+"1","
+"
+"2","trying URL 'https://cran.rstudio.com/src/contrib/lifecycle_1.0.3.tar.gz'
+"
+"2","Content type 'application/x-gzip'"
+"2"," length 106854 bytes (104 KB)
+"
+"2","downloaded 104 KB
+
+"
+"1","* installing *source* package 'lifecycle' ...
+"
+"1","**  パッケージ 'lifecycle' の解凍および MD5 サムの検証に成功しました 
+"
+"1","** using staged installation
+"
+"1","** R
+"
+"1","** inst
+"
+"1","** byte-compile and prepare package for lazy loading
+"
+"1"," loadNamespace(i, c(lib.loc, .libPaths()), versionCheck = vI[[i]]) でエラー: 
+"
+"1","  namespace 'rlang' 1.0.2 is being loaded, but >= 1.0.6 is required
+"
+"1"," 呼び出し:  <Anonymous> ... withCallingHandlers -> loadNamespace -> namespaceImport -> loadNamespace
+"
+"1"," 実行が停止されました 
+"
+"1","ERROR: lazy loading failed for package 'lifecycle'
+"
+"1","* removing 'C:/R/R-4.0.5/library/lifecycle'
+"
+"1","* restoring previous 'C:/R/R-4.0.5/library/lifecycle'
+"
+"2","
+"
+"2",""
+"2","The downloaded source packages are in
+	‘C:\Users\NobuokaYuki\AppData\Local\Temp\RtmpUXxOKU\downloaded_packages’"
+"2",""
+"2","
+"

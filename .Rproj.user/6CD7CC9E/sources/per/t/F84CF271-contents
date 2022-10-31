@@ -1,0 +1,228 @@
+---
+title: "Science of Infomation 3"
+subtitle: "practice ggplot"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: TRUE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+
+```{r}
+str(diamonds)
+```
+
+```{r}
+table(diamonds$color)
+```
+
+```{r}
+set.seed(123)
+dsample <- diamonds[sample(nrow(diamonds), 100),]
+```
+
+```{r}
+cpc0 <- ggplot(data = dsample, aes(carat, price, color))
+plot(cpc0)
+```
+
+```{r}
+cpc1 <- cpc0 + geom_point(aes(color = color),size = 3)
+cpc1
+```
+
+add a differentible curve and regression line
+
+```{r}
+cpc2 <- cpc1 + geom_smooth()
+cpc2 + ggtitle("Differentiable Curve")
+```
+
+```{r}
+cpc3 <- cpc1 + geom_smooth(method = "lm", se = FALSE)
+cpc3 + ggtitle("Regression Line")
+```
+
+caratとpriceの関係は分かるが、colorとの関係は分かりづらい。
+geom_jitter()をつかってみる
+
+```{r}
+cpc_carat <- ggplot(data = diamonds, aes(x = color, y = carat))
+cpc_carat + geom_jitter(alpha = 0.1)
+```
+
+```{r}
+cpc_carat + geom_boxplot(aes(fill = color))
+```
+
+```{r}
+cpc_carat_den <- ggplot(data = diamonds, aes(x = carat))
+cpc_carat_den + geom_density(aes(color = color)) + scale_x_continuous(limits = c(0,3))
+```
+
+ダイアモンドの色ごとにカラットの密度を出した。0.5カラットくらいが一番多い
+
+```{r}
+cpc_price <- ggplot(data = diamonds, aes(x = color, y = price))
+cpc_price + geom_jitter(alpha = 0.2, color = "blue")
+```
+
+```{r}
+cpc_price + geom_boxplot(aes(fill = color))
+```
+
+```{r}
+cpc_price_den <- ggplot(diamonds, aes(x = price))
+cpc_price_den + geom_density(aes(color = color)) + scale_x_continuous(limits = c(0, 17000))
+```
+
+x軸がcaratとpriceで同じような密度曲線になったが、その2つの変数は関連があるから当たり前。
+
+色ごとの1カラット当たりの価格
+
+```{r}
+cpc_pc <- ggplot(diamonds, aes(x = color, y = price/carat))
+cpc_pc + geom_jitter(alpha = 0.2, color = "green")
+```
+
+```{r}
+cpc_pc + geom_boxplot(aes(fill = color))
+```
+
+
+```{r}
+cpc_price_den <- ggplot(diamonds, aes(x = price/carat))
+cpc_price_den + geom_density(aes(color = color)) +
+  scale_x_continuous(limits = c(0, 12000))
+```
+
+```{r}
+#install.packages("hflights")
+library(hflights)
+str(hflights)
+```
+
+ArrDelay:arrival delay
+ArrTime:arrival time
+
+```{r}
+d <- ggplot(hflights, aes(x = factor(DayOfWeek), y = ArrDelay)) + geom_point()
+d + xlab("Day of Week") + ylab("Arrival Delay")
+```
+
+
+```{r}
+d_box <- ggplot(hflights, aes(x = factor(DayOfWeek), y = ArrDelay)) + geom_boxplot()
+d_box + xlab("Day of Week") + ylab("Arrival Delay")
+```
+
+
+```{r}
+d_den <- ggplot(hflights, aes(x = ArrDelay))
+d_den + geom_density(aes(color = factor(DayOfWeek))) + scale_x_continuous(limits = c(0, 250))
+```
+
+```{r}
+t_jitter <- ggplot(hflights, aes(x = ArrTime, y = ArrDelay)) + geom_jitter(alpha = 0.1)
+t_jitter + xlab("Arrival Time") + ylab("Arrival Delay")
+```
+
+```{r}
+t <- ggplot(data = hflights, aes(x = ArrTime, y = ArrDelay))
+t + geom_point() + geom_smooth(method = "lm")
+```
+
+```{r}
+set.seed(111)
+fsample <- hflights[sample(nrow(hflights), 1000),]
+
+t_jitter_sample <- ggplot(fsample, aes(x = ArrTime, y = ArrDelay)) + geom_jitter()
+t_jitter_sample + xlab("Arrival Time") + ylab("Arrival Delay") + ggtitle("Random Sample")
+```
+
+```{r}
+t_sample <- ggplot(fsample, aes(x = ArrTime, y = ArrDelay))
+t_sample + geom_point() + geom_smooth(method = "lm")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,4 @@
+"0","cpc2 <- cpc1 + geom_smooth()"
+"0","cpc2 + ggtitle(""Differentiable Curve"")"
+"2","`geom_smooth()` using method = 'loess' and formula 'y ~ x'
+"

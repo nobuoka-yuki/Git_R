@@ -1,0 +1,4 @@
+"0","cpc3 <- cpc1 + geom_smooth(method = ""lm"", se = FALSE)"
+"0","cpc3 + ggtitle(""Regression Line"")"
+"2","`geom_smooth()` using formula 'y ~ x'
+"

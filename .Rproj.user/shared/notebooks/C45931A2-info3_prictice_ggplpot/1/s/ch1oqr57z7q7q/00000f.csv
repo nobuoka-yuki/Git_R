@@ -1,0 +1,2 @@
+"0","cpc0 <- ggplot(data = dsample, aes(carat, price, color))"
+"0","plot(cpc0)"

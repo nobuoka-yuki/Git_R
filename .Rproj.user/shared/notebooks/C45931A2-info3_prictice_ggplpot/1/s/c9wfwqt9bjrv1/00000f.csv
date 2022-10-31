@@ -1,0 +1,5 @@
+"0","t_jitter <- ggplot(hflights, aes(x = ArrTime, y = ArrDelay)) + geom_jitter(alpha = 0.1)"
+"0","t_jitter + xlab(""Arrival Time"") + ylab(""Arrival Delay"")"
+"2","Warning:"
+"2"," Removed 3622 rows containing missing values (geom_point).
+"

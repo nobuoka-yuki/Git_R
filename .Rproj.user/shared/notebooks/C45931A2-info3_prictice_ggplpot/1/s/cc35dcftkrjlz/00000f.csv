@@ -1,0 +1,2 @@
+"0","cpc_price <- ggplot(data = diamonds, aes(x = color, y = price))"
+"0","cpc_price + geom_jitter(alpha = 0.2, color = ""blue"")"
