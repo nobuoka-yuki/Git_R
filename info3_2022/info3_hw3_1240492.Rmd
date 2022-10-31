@@ -163,13 +163,26 @@ ggplot(economics, aes(x = date, y = unemploy)) +
                                      fill = party),
             ymin = 0, ymax = 16000, alpha = 0.4, alpha = 0.1,colour = "gray") +
   geom_line(size = 0.5) +
-  scale_fill_manual(values = c("Democratic" = "blue", 
-                               "Republican" = "tomato")) +
-  geom_text(data=presidential,aes(x=start+500, y=3000,label=name), size=2) +
+  scale_fill_manual(values = c("Democratic" = "#6495ED", 
+                               "Republican" = "#F08080")) +
+  geom_text(data=presidential,aes(x=start, y=3000,label=name), size=2, hjust = 0) +
   labs(title = "Unemployment in the US", x = "Date", y = "Unemployment",
        fill = "Government")
 ```
 
+
+# 3 
+
+```{r}
+data <- read_csv("poplation_data_since2000.csv")
+glimpse(data)
+```
+
+```{r}
+data %>% 
+  ggplot() +
+  geom_bar(aes(x = 時点, y = 全国), stat = "identity")
+```
 
             
 
