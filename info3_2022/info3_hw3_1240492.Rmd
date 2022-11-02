@@ -173,17 +173,44 @@ ggplot(economics, aes(x = date, y = unemploy)) +
 
 # 3 
 
+https://www.soumu.go.jp/senkyo/senkyo_s/news/sonota/nendaibetu/
+            
+https://covid19.mhlw.go.jp/ 
+性別・年代別重傷者数を隣置きの棒グラフに。
+
+
 ```{r}
-data <- read_csv("poplation_data_since2000.csv")
+data <- read.csv("KUT_syusyoku.csv")
 glimpse(data)
 ```
-
 ```{r}
-data %>% 
-  ggplot() +
-  geom_bar(aes(x = 時点, y = 全国), stat = "identity")
+data <- data %>% 
+  mutate(経済マネジメント学群 = as.numeric(ifelse(経済マネジメント学群 == "-", NA, 経済マネジメント学群)),
+                   修士 = as.numeric(ifelse(修士 == "-", NA, 修士)),
+                   年度 = as.factor(年度))
+names(data) <- c("year", "kougaku", "keimane", "syusi")
 ```
 
-            
+```{r}
+data <- data %>% 
+  pivot_longer(cols = c(kougaku, keimane, syusi),
+               names_to = "year",
+               values_to = "gakugun")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
