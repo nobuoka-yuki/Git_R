@@ -159,8 +159,7 @@ for (i in 1:length(df1$date)) {
 
 ```{r}
 ggplot(economics, aes(x = date, y = unemploy)) +
-  geom_rect(data = presidential, aes(NULL, NULL, xmin = start, xmax = end, 
-                                     fill = party),
+  geom_rect(data = presidential, aes(xmin = start, xmax = end, fill = party),
             ymin = 0, ymax = 16000, alpha = 0.4, alpha = 0.1,colour = "gray") +
   geom_line(size = 0.5) +
   scale_fill_manual(values = c("Democratic" = "#6495ED", 
@@ -193,11 +192,16 @@ names(data) <- c("year", "kougaku", "keimane", "syusi")
 
 ```{r}
 data <- data %>% 
-  pivot_longer(cols = c(kougaku, keimane, syusi),
-               names_to = "year",
+  pivot_longer(cols = kougaku:syusi,
+               names_to = "s",
                values_to = "gakugun")
 ```
 
+```{r}
+data %>% 
+  ggplot() +
+  geom_bar(aes(x = year, y = gakugun, fill = s), stat = "identity", position = "dodge")
+```
 
 
 

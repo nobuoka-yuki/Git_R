@@ -1,0 +1,267 @@
+---
+title: "Informattion Science3"
+subtitle: "エクササイズ A Variety of Plots"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: TRUE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+
+```{r}
+if (!require(ggwaffle)) {
+  remotes::install_github("liamgilbey/ggwaffle")
+}
+pacman::p_load(tidyverse,
+               gapminder,
+               gcookbook,
+               ggwaffle,
+               ggcharts,
+               ggridges,
+               GGally,
+               emojifont)
+```
+
+これはコピペで許してつかぁさい
+
+```{r}
+summarySE <- function(data = NULL, 
+                      measurevar, 
+                      groupvars = NULL, 
+                      na.rm = FALSE,
+                      conf.interval = .95, 
+                      .drop = TRUE) {
+    library(plyr)
+
+    # New version of length which can handle NA's: if na.rm==T, don't count them
+    length2 <- function (x, na.rm = FALSE) {
+        if (na.rm) sum(!is.na(x))
+        else       length(x)
+    }
+
+    # This does the summary. For each group's data frame, return a vector with
+    # N, mean, and sd
+    datac <- ddply(data, groupvars, .drop = .drop,
+      .fun = function(xx, col) {
+        c(N    = length2(xx[[col]], na.rm = na.rm),
+          mean = mean   (xx[[col]], na.rm = na.rm),
+          sd   = sd     (xx[[col]], na.rm = na.rm)
+        )
+      },
+      measurevar
+    )
+
+    # Rename the "mean" column    
+    datac <- rename(datac, c("mean" = measurevar))
+
+    datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+
+    # Confidence interval multiplier for standard error
+    # Calculate t-statistic for confidence interval: 
+    # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+    ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+    datac$ci <- datac$se * ciMult
+
+    return(datac)
+}
+```
+
+# Comparing  Categories
+
+## Bar Charts
+
+```{r}
+data(mpg)
+
+bar1 <- ggplot(mpg, aes(x = manufacturer)) +
+  geom_bar()
+plot(bar1)
+```
+
+
+**x軸とy軸の変換は、aes(y = ) を指定するとできる。**
+
+```{r}
+bar2 <- ggplot(mpg, aes(y = manufacturer)) +
+  geom_bar()
+plot(bar2)
+```
+
+```{r}
+bar2b <- bar1 +
+  coord_flip()
+plot(bar2b)
+```
+
+x軸を入れ替え
+
+```{r}
+bar3 <- ggplot(mpg, aes(y = reorder(manufacturer, desc(manufacturer)))) +
+  geom_bar() +
+  labs(y = "Manufacturer")
+plot(bar3)
+```
+
+
+割合
+
+after_stat(count)でケース数を数えれる。
+
+```{r}
+bar4 <- ggplot(mpg,
+               aes(x = (after_stat(count) / sum(after_stat(count))),
+                   y = reorder(manufacturer, desc(manufacturer)))) +
+  geom_bar() +
+  labs(y = "Manufacturer",
+       x = "Proportion")
+plot(bar4)
+```
+
+
+## Paired Bar Charts
+
+```{r}
+data(Titanic)
+
+Titanic <- as_tibble(Titanic)
+
+pbar1 <- ggplot(Titanic, aes(x = Class, y = n, fill = Sex)) +
+  geom_bar(stat = "identity",
+           position = "dodge") +
+  scale_fill_brewer(palette = "Set2")
+plot(pbar1)
+```
+
+```{r}
+pbar2 <- ggplot(Titanic, aes(x = Sex, y = n, fill = Class)) +
+  geom_bar(stat = "identity",
+           position = "dodge") +
+  scale_fill_brewer(palette = "Accent")
+plot(pbar2)
+```
+
+## Stacked Bar
+
+```{r}
+sbar1 <- ggplot(Titanic, aes(x = Class, y = n, fill = Sex)) +
+  geom_bar(stat = "identity",
+           position = "stack") +
+  scale_fill_brewer(palette = "Set2")
+plot(sbar1)
+```
+
+```{r}
+sbar2 <- ggplot(Titanic, aes(x = Sex, y = n, fill = Class)) +
+  geom_bar(stat = "identity",
+           position = "stack") +
+  scale_fill_brewer(palette = "Accent")
+plot(sbar2)
+```
+
+
+position = "fill"　で割合
+
+```{r}
+sbar3 <- ggplot(Titanic, aes(x = Sex, y = n, fill = Class)) +
+  geom_bar(stat = "identiy",
+           position = "fill") +
+  scale_fill_brewer(palette = "Accent")
+plot(sbar3)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
