@@ -1,0 +1,279 @@
+---
+title: |
+  | Final Project Presentation
+subtitle: "Infomation Science3"
+author: "Nobuoka Yuki"
+date: "2022年11月28日"
+output: 
+  beamer_presentation:
+    theme: QPE
+    highlight: zenburn
+    latex_engine: lualatex
+    fig_caption: false #プレゼンの図はキャプション不要（スライドタイトルを使う）
+header-includes:
+  - \institute[矢内研]{計量政治経済研究室}
+classoption: unicode
+---
+ 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.height = 8, 
+                      fig.width = 12,
+                      dev = "cairo_pdf")
+```
+
+```{r load_packs, include = FALSE, results = 'hide'}
+## 利用するパッケージを忘れずに読み込む
+pacman::p_load(tidyverse,
+               estimatr,
+               texreg,
+               palmerpenguins)
+
+## ggplot2 で使うフォントの設定：Windows, macOS, Ubuntu に対応
+if (Sys.info()["sysname"] == "Windows") { # Windows用
+  if (!require(fontregisterer)) {
+    pacman::p_load(systemfonts)
+    remotes::install_github("Gedevan-Aleksizde/fontregisterer",
+                            repos = NULL, type = "source")
+  }
+  library(fontregisterer)
+  my_font <- "IPAexGothic"
+} else { # macOS と Ubuntu 用
+  my_font <- "IPAexGothic"
+  #my_font <- "HiraginoSans-W3" # macOS でヒラギノを使う場合はこれ
+}
+theme_set(theme_light(base_size = 24,
+                         base_family = my_font))
+
+# ggplot2のテーマをスライド用に変更
+qpe_theme <- theme(
+  plot.background = element_rect(fill = "gray87",
+                                 color = NA),
+  legend.key = element_rect(fill = "white",
+                            color = "white"),
+  legend.background = element_rect(fill = "gray87",
+                                   color = NA),
+  legend.key.size = unit(25, "mm"))
+```
+
+```{r, include=FALSE}
+ #データの読み込み
+data <- read.csv("OLYMPICS_athlete_events.csv")
+#1980年以降の大会を抽出
+data <- data %>%                           
+  filter(Year >= 1980) %>% 
+  select(Year,NOC, City, Medal, Sex, Season) %>% 
+  arrange(Year)
+#開催国と選手の出身国の表記を統一
+data <- data %>%    
+  mutate(City = str_replace_all(City, pattern = c("Lake Placid" = "USA",
+                                                  "Moskva" = "RUS",
+                                                  "Sarajevo" = "YUG",
+                                                  "Los Angeles" = "USA",
+                                                  "Calgary" = "CAN",
+                                                  "Seoul" = "KOR",
+                                                  "Barcelona" = "ESP",
+                                                  "Albertville" = "FRA",
+                                                  "Lillehammer" = "NOR",
+                                                  "Atlanta" = "USA",
+                                                  "Nagano" = "JPN",
+                                                  "Sydney" = "AUS",
+                                                  "Salt Lake City" = "USA",
+                                                  "Athina" = "GRE",
+                                                  "Torino" = "ITA",
+                                                  "Beijing" = "CHN",
+                                                  "Vancouver" = "CAN",
+                                                  "London" = "GBR",
+                                                  "Sochi" = "RUS",
+                                                  "Rio de Janeiro" = "BRA")))
+
+#開催国か否かの変数を追加
+data <- data %>%
+  mutate(Situation = ifelse(NOC == City, "Host", "Guest"))
+
+#冬と夏を区別（文字列を操作）
+data <- data %>%  
+# mutate(Year_place = paste(!!!rlang::syms(c("Year", "Season")), sep = "_"))
+  mutate(Year_place = str_c(Year, Season, sep = "_"))
+```
+
+
+# Introduction
+
+## Story
+
+\LARGE
+
+- Get more medals at the Olympics held in home country than held in other countries
+
+## Background
+
+\LARGE
+
+- low physical burden of traveling
+- experiential knowledge
+- sports enhancement strategy by government
+
+
+# Visualization
+
+## Number of medals by country
+
+```{r, include=FALSE}
+Year_Medal_data <- data %>%
+  group_by(Year,Year_place, NOC) %>% 
+  # 年と国ごとにメダル数をカウント
+  summarise(Medal_count = sum(ifelse(is.na(Medal), 0, 1)), #NAがあるときはis.na()
+            Situation = Situation[1],  #これの方が分かりやすい
+            Sensyu = length(NOC),
+            Medal_per = (Medal_count / Sensyu) * 100, #1人当たりのメダル獲得数
+            Season = max(Season),
+            .groups = "drop")
+
+Year_Medal_data <- Year_Medal_data %>%    #開催したことのある国だけを抽出
+  filter(NOC %in% unique(data$City))
+
+fig1 <- Year_Medal_data %>% 
+  ggplot() +
+  geom_boxplot(aes(x = NOC, y = Medal_count), outlier.shape = NA) +
+  geom_point(aes(x = NOC, y = Medal_count, color = Situation),
+             alpha = 0.7, size = 2) +
+  scale_colour_manual(values = c("gray", "red")) +
+  theme(legend.position = "bottom") +
+  labs(x = "Country", y = "Number of Medals") +
+  theme(axis.text  = element_text(size = rel(0.6)),
+        strip.background = element_rect(fill = "gray", color = "black"),
+        strip.text = element_text(size = rel(1.2), color = "black"))
+```
+
+```{r}
+plot(fig1 + qpe_theme)
+```
+
+## Average number of medals won per country
+
+```{r, include=FALSE}
+Year_Medal_data4 <- tibble(
+  Season = rep("Season", 4*length(unique(Year_Medal_data$NOC))),
+  NOC = rep("NOC", 4*length(unique(Year_Medal_data$NOC))),
+  Situation = rep("Kaisai", 4*length(unique(Year_Medal_data$NOC))),
+  Medal_count = rep(0, 4*length(unique(Year_Medal_data$NOC)))
+)
+
+n <- 1
+
+for (i in unique(Year_Medal_data$NOC)) {
+   df1 <- Year_Medal_data %>% 
+    filter(NOC == i)
+   
+   #夏開催で非開催地
+   df2 <- df1 %>% 
+     filter(Season == "Summer")
+   df3 <- df2 %>% 
+     filter(Situation == "Guest")
+   S_G_medal <- round(mean(df3$Medal_count), digits = 2)
+   Year_Medal_data4[n, 1] <- "Summer"
+   Year_Medal_data4[n, 2] <- i
+   Year_Medal_data4[n, 3] <- "Guest"
+   Year_Medal_data4[n, 4] <- S_G_medal
+   
+   #夏開催で開催地
+   df3 <- df2 %>% 
+     filter(Situation == "Host")
+   S_H_medal <- round(mean(df3$Medal_count), digits = 2)
+   Year_Medal_data4[n + 1, 1] <- "Summer"
+   Year_Medal_data4[n + 1, 2] <- i
+   Year_Medal_data4[n + 1, 3] <- "Host"
+   Year_Medal_data4[n + 1, 4] <- S_H_medal
+   
+   #冬開催で非開催地
+   df2 <- df1 %>% 
+     filter(Season == "Winter")
+   df3 <- df2 %>% 
+     filter(Situation == "Guest")
+   W_G_medal <- round(mean(df3$Medal_count), digits = 2)
+   Year_Medal_data4[n + 2, 1] <- "Winter"
+   Year_Medal_data4[n + 2, 2] <- i
+   Year_Medal_data4[n + 2, 3] <- "Guest"
+   Year_Medal_data4[n + 2, 4] <- W_G_medal
+   
+   #冬開催で開催地
+   df3 <- df2 %>% 
+     filter(Situation == "Host")
+   W_H_medal <- round(mean(df3$Medal_count), digits = 2)
+   Year_Medal_data4[n + 3, 1] <- "Winter"
+   Year_Medal_data4[n + 3, 2] <- i
+   Year_Medal_data4[n + 3, 3] <- "Host"
+   Year_Medal_data4[n + 3, 4] <- W_H_medal
+   
+   n <- n + 4
+}
+
+fig2 <- Year_Medal_data4 %>% 
+  ggplot() +
+  geom_bar(aes(x = NOC, y = Medal_count, fill = Situation), 
+           stat = "identity", position = "dodge") +
+  facet_wrap(~ Season, ncol = 1, scales = "free_y") +
+  labs(x = "Country", y = "Average Number of Medals") +
+  scale_fill_manual(values = c("gray", "#ff5252")) +
+  theme(strip.background = element_rect(fill = "gray", color = "black"),
+        strip.text = element_text(size = rel(1.2), color = "black"),
+        axis.text  = element_text(size = rel(0.6)))
+
+```
+
+```{r}
+plot(fig2 + qpe_theme)
+```
+
+## Changes in the number of medals (Summer)
+
+```{r}
+fig3 <- Year_Medal_data %>%
+  filter(Season == "Summer") %>% 
+  ggplot() +
+  geom_line(aes(x = Year, y = Medal_count, group = 1), size = 0.8) +
+  geom_point(aes(x = Year, y = Medal_count, color = Situation), size = 1.6) +
+  scale_colour_manual(values = c("black", "red")) +
+  facet_wrap(~ NOC, ncol = 4) +
+  labs(x = "Country", y = "Number of Medals") +
+  theme(strip.background = element_rect(fill = "gray", color = "black"),
+        strip.text = element_text(size = rel(0.5), color = "black"),
+        axis.text  = element_text(size = rel(0.5)))
+plot(fig3 + qpe_theme)
+```
+
+## Changes in the number of medals (Winter)
+
+```{r}
+fig4 <- Year_Medal_data %>%
+  filter(Season == "Winter") %>% 
+  ggplot() +
+  geom_line(aes(x = Year, y = Medal_count, group = 1), size = 0.8) +
+  geom_point(aes(x = Year, y = Medal_count, color = Situation), size = 1.6) +
+  scale_colour_manual(values = c("black", "red")) +
+  facet_wrap(~ NOC, ncol = 4) +
+  labs(x = "Country", y = "Number of Medals") +
+  theme(strip.background = element_rect(fill = "gray", color = "black"),
+        strip.text = element_text(size = rel(0.5), color = "black"),
+        axis.text  = element_text(size = rel(0.5)))
+plot(fig4 + qpe_theme)
+```
+
+
+# Conclusion
+
+## Conclusion
+
+\begin{alertblock}{story}
+ Get more medals at the Olympics held in your own country than when they are held in other countries
+\end{alertblock}
+
+\begin{block}{Conclusion}
+ \begin{itemize}
+   \item The figures reflected the story
+   \item Also be able to read the background of the story from these figures
+ \end{itemize}
+\end{block}

@@ -1,0 +1,107 @@
+---
+title: "Information Science 3"
+subtitle: "Assignment4"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: FALSE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+
+pacman::p_load(rnaturalearth, rnaturalearthdata, rgeos)
+
+pacman::p_load_gh("ropensci/rnaturalearthhires") #日本地図データ
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+
+
+```{r}
+data <- read.csv("SSDSE-C-2022.csv")
+data <- data[-c(1,2),] #いらない行を消す
+data <- data %>% 
+  select(SSDSE.C.2022, Prefecture, LB121202) %>% 
+  mutate(LB121202 = as.numeric(LB121202))
+names(data) <- c("Code", "Prefecture", "Drinking_fee")
+data <- data %>% 
+  mutate(Code = str_sub(Code, start = 2, end = 3),
+         Code = as.numeric(Code))
+```
+
+```{r}
+Japan_Map <- ne_states("Japan", returnclass = "sf")
+
+Japan_Map <- Japan_Map %>%
+    mutate(Code = str_sub(iso_3166_2, start = 4),
+           Code = as.numeric(Code))
+
+Japan_Map <- left_join(Japan_Map, data, by = "Code")
+```
+
+```{r}
+Japan_Map %>% 
+  ggplot() +
+  geom_sf(aes(fill = Drinking_fee)) +
+  scale_fill_gradient(low = "white", high = "black") +
+  labs(fill = "Drinking fee (yen)") +
+  ggtitle("Drinking fee by prefecture")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

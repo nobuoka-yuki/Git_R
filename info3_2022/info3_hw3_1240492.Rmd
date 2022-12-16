@@ -7,7 +7,7 @@ output:
   pdf_document:
     latex_engine: lualatex
     toc: false
-    number_sections: TRUE
+    number_sections: FALSE
   html_document:
     highlight: tango
     theme: united
@@ -120,7 +120,7 @@ data %>%
 ```
 
 
-This graph show forest area in Japan from 1980-2019[統計Dashboard](https://dashboard.e-stat.go.jp/graph?screenCode=00640). The best thing about this graph is that it allows interactive manipulation. The viewer can see more detailed values by moving the cursor over the line. However, this graph has some improvements. Sine this graph uses a line graph, it can be inferred that the purpose is to convey changes in forest area over time. In this graph, the y-axis stars at 0, making it difficult to see the degree of change. If the creator of this graph wants to claim that "forest area is declining" they need to adjust the y-axis. In addition, the x-axis also needs to be improved as the period and width of the axis do not match. In the image below, the width of the y-axis has been adjusted, and the width the x-axis corresponds to "year"
+This graph show forest area in Japan from 1980-2019[(統計Dashboard)](https://dashboard.e-stat.go.jp/graph?screenCode=00640). The best thing about this graph is that it allows interactive manipulation. The viewer can see more detailed values by moving the cursor over the line. However, this graph has some improvements. Sine this graph uses a line graph, it can be inferred that the purpose is to convey changes in forest area over time. In this graph, the y-axis stars at 0, making it difficult to see the degree of change. If the creator of this graph wants to claim that "forest area is declining" they need to adjust the y-axis. In addition, the x-axis also needs to be improved as the period and width of the axis do not match. In the image below, the width of the y-axis has been adjusted, and the width the x-axis corresponds to "year"
 
 
 ```{r}

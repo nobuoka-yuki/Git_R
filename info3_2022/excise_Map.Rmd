@@ -1,0 +1,288 @@
+---
+title: "Information Science 3"
+subtitle: "Excise Map"
+author: "Nobuoka Yuki (1240492)"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    latex_engine: lualatex
+    toc: false
+    number_sections: FALSE
+  html_document:
+    highlight: tango
+    theme: united
+    toc: true
+    smart: false
+    css: my-markdown.css
+header-includes:
+  - \usepackage{indentfirst}
+  - \parindent = 1em
+  - \usepackage{dcolumn}
+  - \newcolumntype{.}{D{.}{.}{-1}}
+  - \usepackage{caption}
+  - \captionsetup[table]{name=表}
+  - \captionsetup[figure]{name=図}
+  - \usepackage{hyperref}
+documentclass: bxjsarticle
+classoption: 11pt,a4paper,lualatex,ja=standard
+---
+
+```{r global_option, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE,      # Rコード: FALSE で非表示, TRUE で表示
+                      warning = FALSE,  # 警告文: FALSE で非表示, TRUE で表示
+                      message = FALSE,  # メッセージ: FALSE で非表示, TRUE で表示
+                      fig.width = 5,    # 図の幅の既定値
+                      fig.height = 3)   # 図の高さの既定値
+## PDF に出力する際は cairo を使用する
+if (knitr::is_latex_output()) {
+  knitr::opts_chunk$set(dev = "cairo_pdf")
+}
+```
+
+
+```{r, include=FALSE}
+pacman::p_load(tidyverse, 
+               fontregisterer)
+```
+
+
+```{r, include=FALSE}
+library(fontregisterer)
+my_font <- "Yu Gothic"
+## ggplot2 用の設定
+theme_set(theme_gray(base_size = 9,
+                     base_family = my_font))
+```
+
+
+# 私たちのR　
+
+##20.11 地図
+
+```{r}
+pacman::p_load(rnaturalearth, rnaturalearthdata, rgeos)
+```
+
+```{r}
+world_map <- ne_countries(scale = "small",
+                          returnclass = "sf")
+class(world_map)
+```
+
+```{r}
+world_map %>% 
+  ggplot() +
+  geom_sf() +
+  theme_void() #geom_voidは何もないテーマ。お好みで
+```
+
+```{r}
+world_map %>% 
+  ggplot() +
+  geom_sf(aes(fill = pop_est), color = "white") +
+  scale_fill_gradient(low = "cornflowerblue",
+                      high = "brown3") +
+  labs(fill = "人口") +
+  theme_void()
+```
+
+```{r}
+world_map %>% 
+  ggplot() +
+  geom_sf(aes(fill = pop_est)) +
+  scale_fill_gradient(low = "cornflowerblue", high = "brown3") +
+  labs(fill = "人口") +
+  coord_sf(xlim = c(90, 150), ylim = c(10, 50)) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+asia_map <- ne_countries(scale = "medium",
+                         continent = "Asia",
+                         returnclass = "sf")
+
+asia_map %>% 
+  ggplot() +
+  geom_sf(aes(fill = income_grp)) +
+  theme_void() +
+  labs(fill = "Income Group")
+```
+
+
+```{r}
+asia_map %>% 
+  filter(subregion == "Eastern Asia") %>% 
+  ggplot() +
+  geom_sf(aes(fill = income_grp)) +
+  theme_void() +
+  labs(fill = "Income Group")
+```
+
+```{r}
+unique(asia_map$subregion)
+```
+
+```{r}
+asia_map %>% 
+  mutate(Population = case_when(pop_est < 10000000 ~ "1千万未満",
+                                pop_est < 50000000 ~ "5千万未満",
+                                pop_est < 100000000 ~ "1億未満",
+                                pop_est < 500000000 ~ "5億未満",
+                                TRUE               ~ "5億以上"),
+         Population = factor(Population,
+                             levels = c("1千万未満", "5千万未満", "1億未満", "5億未満", "5億以上"))) %>%
+  ggplot() +
+  geom_sf(aes(fill = Population)) +
+  scale_fill_brewer(palette = "Blues", drop = FALSE) +
+  labs(fill = "人口") +
+  theme_void() +
+  theme(legend.position = "bottom")
+```
+
+
+## 日本地図
+
+```{r}
+ne_countries(scale = "small", country = "Japan", returnclass = "sf") %>% 
+  ggplot() +
+  geom_sf() +
+  theme_void()
+```
+
+
+```{r}
+ne_countries(scale = "large", country = "Japan", returnclass = "sf") %>%
+    ggplot() +
+    geom_sf() +
+    theme_void() # 空っぽのテーマ
+```
+
+
+CRANに登録されておらずGitHubにあるときは、p_load_gh
+
+```{r}
+pacman::p_load_gh("ropensci/rnaturalearthhires")
+```
+
+```{r}
+Japan_Map <- ne_states("Japan", returnclass = "sf")
+
+Japan_Map %>% 
+  ggplot() +
+  geom_sf() +
+  theme_void()
+```
+
+人口密度のデータを読み込む
+  
+```{r}
+Japan_Density <- read_csv("Japan_Density.csv")
+Japan_Density
+```
+地域コードの確認
+
+```{r}
+Japan_Map$iso_3166_2
+```
+
+数字だけ取り出し、数値型に変換
+
+
+```{r}
+Japan_Map <- Japan_Map %>%
+    mutate(Code = str_sub(iso_3166_2, 4),
+           Code = as.numeric(Code))
+
+Japan_Map$Code
+```
+
+結合
+
+```{r}
+Japan_Map <- left_join(Japan_Map, Japan_Density, by = "Code") #キーはCode
+Japan_Map
+```
+
+```{r}
+Japan_Map %>% 
+  mutate(Density2 = case_when(Density >= 3000 ~ "3000人以上",
+                              Density >= 1000 ~ "1000人以上",
+                              Density >= 500 ~ "500人以上",
+                              Density >= 100 ~ "100人以上",
+                              TRUE           ~ "100人未満"),
+         Density2 = factor(Density2, ordered = TRUE,
+                           levels = c("3000人以上", "1000人以上", "500人以上",
+                                      "100人以上", "100人未満"))) %>% 
+  ggplot() +
+  geom_sf(aes(fill = Density2)) +
+  labs(fill = "人口密度 (km^2)") +
+  theme_void()
+```
+
+## 特定の都道府県
+
+```{r}
+pacman::p_load_gh("uribo/jpndistrict")
+```
+
+大阪を抽出
+
+```{r}
+# jpn_pref(admin_name == "大阪府")でも可
+Osaka_map <- jpn_pref(pref_code = 27)
+class(Osaka_map)
+```
+
+```{r}
+Osaka_map %>% 
+  ggplot() +
+  geom_sf() +
+  theme_minimal()
+```
+
+```{r}
+Osaka_Student <- read_csv("Osaka_Student.csv")
+Osaka_Student
+```
+```{r}
+Osaka_map <- Osaka_map %>% 
+  mutate(Code = as.numeric(city_code))
+
+Osaka_map <- left_join(Osaka_map, Osaka_Student, by = "Code")
+```
+
+
+```{r}
+Osaka_map %>% 
+  mutate(Student_Ratio = Student / Pop * 10000) %>% 
+  ggplot() +
+  geom_sf(aes(fill = Student_Ratio)) +
+  scale_fill_gradient(low = "white", high = "black") +
+  labs(fill = "1万人当たりの学生数（人）") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+# jpn_pref(admin_name == "大阪府")でも可
+kagosima_map <- jpn_pref(pref_code = 46)
+class(kagosima_map)
+```
+
+```{r}
+kagosima_map %>% 
+  ggplot() +
+  geom_sf() +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+

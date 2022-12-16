@@ -1,0 +1,50 @@
+【情報科学3　講義Exercises URL】
+講義Exercises URL
+●7.The Grammar of Graphics and ggplot2
+
+https://rpubs.com/krask/98655
+
+https://genviz.org/module-02-r/0002/03/03/ggplot2_exercises/
+
+https://datacarpentry.org/R-ecology-lesson/04-visualization-ggplot2
+
+https://www.r-exercises.com/2018/02/23/practice-you-ggplot-skills-exercises/
+
+https://ggplot2.tidyverse.org/
+
+https://r-graph-gallery.com/
+
+
+●8.A Variety of Plots
+
+https://yukiyanai.github.io/teaching/info3/exercises/info3_charts.html
+
+
+● 11.Time
+
+Line Charts:
+http://www.sthda.com/english/wiki/ggplot2-line-plot-quick-start-guide-r-software-and-data-visualization
+
+Area Plots:
+https://t-redactyl.io/blog/2015/12/creating-plots-in-r-using-ggplot2-part-2-area-plots.html
+
+Stacked Area Plots:
+https://r-graph-gallery.com/136-stacked-area-chart.html
+
+Data Manipulation for Time:
+https://myslu.stlawu.edu/~iramler/stat234/coursenotes/dates-with-lubridate.html
+
+
+● 13. Plotly
+
+https://plotly.com/ggplot2/getting-started/#plotly-for-r
+
+https://plotly.com/ggplot2/
+
+
+● 14. Shiny
+
+https://shiny.rstudio.com/tutorial/
+
+https://shiny.rstudio.com/gallery/
+

@@ -1,0 +1,41 @@
+【情報科学3　最終課題プレゼン】
+
+●I will begin presentation of infomation science.
+
+●The story I came up with is “Get more medals at the Olympics held in home country than when held in other countries”. 
+
+●I will explain the background of this story.
+I believe that baclground of the story, there is the low physical burden of traveling, experientioal knowledge of the climate and topography(トポグラフィ), and sports enhancement strategy by government that has been in place since decided to host. 
+I will examine the story and background using three types of figures.
+
+● Fisrt, Visualize the number of medals for each country that has experienced hosting the Olympics in its own country since 1980 with a box plot.
+The horizontal axis is the countries that have experienced hosting the Olympics, and the vertical axis is the number of medals in each competition. 
+The black dots represent competition held in other countries, and the red dots represent competition held in the home country. 
+It can be seen that the number of medals is actually higher when host countries.
+
+●Next, Create a bar graph to compare the average number of medals for each competition, held in another country or held in home country.
+The horizontal axis shows the countries that have hosted the Olympics, and the vertical axis shows the average number of medals each competition. Gray bar indicates when the event is held in another country, and red bar indicates when it is held in home country. 
+From this figure, it can be seen that the average number of medals by allmost host countries is higher than when other countries hosted.
+
+●Next, Use a line chart to check how the number of medals acquired changes over time.
+The horizontal axis is the year of the Olympics and the vertical axis is the number of medals. 
+The black dots indicate that the Olympics were held in another country, and the red dots indicate that the Olympics were held in the home country.
+The season of this graph is winter. 
+From this graph, we can see that the number of medals by countries other than Brazil and Spain has been on an increase trend even before the host country.
+Also, Spain has seen a dramatic increase in the number of medals it has won at home.
+
+●The season of this graph is summer. As in the winter, we can see 2 patterns.
+The first is a pattern in which the number of medals won has been increasing since before the home country hosted the competition, and the second is a pattern in which the number of medals has been decreasing but rose significantly number of medals in the year the country hosted the competition.
+The first pattern suggests the background I mentioned, the government has a strategy to strengthen sports since the decision was made to host the Olympics.
+
+●These three figures reflected the story I had thought. I was also able to read the background of the story from these figures.
+
+
+
+
+
+
+
+
+
+
